@@ -20,7 +20,7 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
   size = 320,
   priority = false,
   enableRotation = false,
-  enablePulseWiggle = true,
+  enablePulseWiggle = false,
   ...boxProps
 }) => {
   // Calculate proportional sizes based on the container size
