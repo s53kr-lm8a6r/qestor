@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
+
 import { Collapse, Stack, StackProps } from "@mui/material";
+
 import QestorLogo from "./QestorLogo";
+
 import { QestorText } from "../elements";
 import {
   QESTOR_COLORS,
