@@ -1,1 +1,1 @@
-export { default as QestorLogoComposite } from "./QestorLogoComposite";
+export { default as QestorLogo } from "./QestorLogo";

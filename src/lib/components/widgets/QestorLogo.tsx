@@ -10,17 +10,19 @@ import {
 } from "../elements";
 
 interface QestorLogoCompositeProps extends Omit<BoxProps, "component"> {
+  fill?: "default" | [string, string, string] | string;
   size?: number;
-  priority?: boolean;
   enableRotation?: boolean;
   enablePulseWiggle?: boolean;
+  colorTransition?: string;
 }
 
 const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
+  fill = "default",
   size = 320,
-  priority = false,
   enableRotation = false,
   enablePulseWiggle = false,
+  colorTransition = "fill 0.2s ease",
   ...boxProps
 }) => {
   // Calculate proportional sizes based on the container size
@@ -39,7 +41,7 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
 
   // Function to generate relative rotation (add/subtract 15-135 degrees from current angle)
   const getRelativeRotation = (currentRotation: number) => {
-    const minChange = 15;
+    const minChange = 35;
     const maxChange = 135;
     const range = maxChange - minChange; // 120 degree range
 
@@ -47,11 +49,11 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
     const randomChange = Math.floor(Math.random() * (range + 1)) + minChange; // 15 to 135
     const isNegative = Math.random() < 0.5;
     const change = isNegative ? -randomChange : randomChange;
-
     const newRotation = currentRotation + change;
 
     // Ensure the angle stays within -360 to 360 degrees
-    return Math.max(-360, Math.min(360, newRotation));
+    const outOfBounds = newRotation > 360 || newRotation < -360;
+    return outOfBounds ? currentRotation + -change : newRotation;
   };
 
   // Set up rotation randomization every 2 seconds (conditionally)
@@ -76,6 +78,13 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
     return () => clearInterval(interval);
   }, [enableRotation]);
 
+  const colors =
+    fill === "default"
+      ? ["#D9D9D9", "#D31B1B", "#FFA500"]
+      : typeof fill === "string"
+      ? [fill, fill, fill]
+      : fill;
+
   return (
     <Box
       position="relative"
@@ -92,20 +101,16 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         top="50%"
         left="50%"
         sx={{
-          transform: enableRotation
-            ? `translate(-50%, -50%) rotate(${n1Rotation}deg)`
-            : "translate(-50%, -50%)",
-          transition: enableRotation
-            ? "transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
-            : "none",
+          transform: `translate(-50%, -50%) rotate(${n1Rotation}deg)`,
+          transition: "transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
           transitionDelay: enableRotation ? "0.1s" : "0s",
         }}
       >
         <QestorLogoN1
           width={n1Size}
           height={n1Size}
-          priority={priority}
-          alt="Qestor Logo N1 Layer"
+          fill={[colors[0], colors[1]]}
+          colorTransition={colorTransition}
         />
       </Box>
 
@@ -115,20 +120,16 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         top="50%"
         left="50%"
         sx={{
-          transform: enableRotation
-            ? `translate(-50%, -50%) rotate(${n2Rotation}deg)`
-            : "translate(-50%, -50%)",
-          transition: enableRotation
-            ? "transform 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
-            : "none",
+          transform: `translate(-50%, -50%) rotate(${n2Rotation}deg)`,
+          transition: "transform 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
           transitionDelay: enableRotation ? "0.2s" : "0s",
         }}
       >
         <QestorLogoN2
           width={n2Size}
           height={n2Size}
-          priority={priority}
-          alt="Qestor Logo N2 Layer"
+          fill={colors[2]}
+          colorTransition={colorTransition}
         />
       </Box>
 
@@ -140,8 +141,8 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         sx={{
           transform: "translate(-50%, -50%)",
           ...(enablePulseWiggle && {
-            animation: "pulse-wiggle 3.0s ease-in-out infinite",
-            "@keyframes pulse-wiggle": {
+            animation: "pulse-wiggle-1 3.0s ease-in-out infinite",
+            "@keyframes pulse-wiggle-1": {
               "0%": {
                 transform: "translate(-50%, -50%) scale(1) rotate(0deg)",
               },
@@ -164,8 +165,8 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         <QestorLogoO
           width={oSize}
           height={oSize}
-          priority={priority}
-          alt="Qestor Logo O Layer"
+          fill={colors[2]}
+          colorTransition={colorTransition}
         />
       </Box>
 
@@ -177,19 +178,37 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         sx={{
           transform: "translate(-50%, -50%)",
           ...(enablePulseWiggle && {
-            animation: "pulse-wiggle 1.5s ease-in-out infinite",
-            "@keyframes pulse-wiggle": {
+            animation: "pulse-wiggle-2 1.5s ease-in-out infinite",
+            "@keyframes pulse-wiggle-2": {
               "0%": {
                 transform: "translate(-50%, -50%) scale(1) rotate(0deg)",
               },
-              "25%": {
-                transform: "translate(-50%, -50%) scale(1.05) rotate(2deg)",
+              "5%": {
+                transform: "translate(-50%, -50%) rotate(2deg)",
               },
-              "50%": {
+              "10%": {
+                transform: "translate(-50%, -50%) scale(1.05) rotate(0deg)",
+              },
+              "15%": {
+                transform: "translate(-50%, -50%) rotate(-2deg)",
+              },
+              "20%": {
                 transform: "translate(-50%, -50%) scale(1.1) rotate(0deg)",
               },
-              "75%": {
-                transform: "translate(-50%, -50%) scale(1.05) rotate(-2deg)",
+              "25%": {
+                transform: "translate(-50%, -50%) scale(1.1) rotate(0deg)",
+              },
+              "30%": {
+                transform: "translate(-50%, -50%) rotate(2deg)",
+              },
+              "35%": {
+                transform: "translate(-50%, -50%) scale(1.05) rotate(0deg)",
+              },
+              "40%": {
+                transform: "translate(-50%, -50%) rotate(-2deg)",
+              },
+              "45%": {
+                transform: "translate(-50%, -50%) scale(1) rotate(0deg)",
               },
               "100%": {
                 transform: "translate(-50%, -50%) scale(1) rotate(0deg)",
@@ -201,8 +220,8 @@ const QestorLogoComposite: React.FC<QestorLogoCompositeProps> = ({
         <QestorLogoV
           width={vWidth}
           height={vHeight}
-          priority={priority}
-          alt="Qestor Logo V Layer"
+          fill={colors[2]}
+          colorTransition={colorTransition}
         />
       </Box>
     </Box>
