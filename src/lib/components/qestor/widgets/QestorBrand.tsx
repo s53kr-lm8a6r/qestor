@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Stack, StackProps } from "@mui/material";
+import { Collapse, Stack, StackProps } from "@mui/material";
 import QestorLogo from "./QestorLogo";
 import { QestorText } from "../elements";
 import {
@@ -16,6 +16,9 @@ interface QestorBrandProps extends Omit<StackProps, "direction"> {
   textSize?: number;
   enableAnimation?: boolean;
   colorTransition?: string;
+  textMargin?: number;
+  textTransitionIn?: boolean;
+  textTransitionTimeout?: number;
 }
 
 const QestorBrand: React.FC<QestorBrandProps> = React.memo(
@@ -26,6 +29,9 @@ const QestorBrand: React.FC<QestorBrandProps> = React.memo(
     textSize = QESTOR_DIMENSIONS.DEFAULT_TEXT_SIZE,
     enableAnimation = false,
     colorTransition = QESTOR_ANIMATIONS.DEFAULT_COLOR_TRANSITION,
+    textMargin = 1,
+    textTransitionIn = false,
+    textTransitionTimeout = 1500,
     ...stackProps
   }) => {
     // Memoized colors
@@ -43,7 +49,6 @@ const QestorBrand: React.FC<QestorBrandProps> = React.memo(
     return (
       <Stack
         direction={stackDirection}
-        spacing={1}
         alignItems="center"
         justifyContent="center"
         {...stackProps}
@@ -55,11 +60,19 @@ const QestorBrand: React.FC<QestorBrandProps> = React.memo(
           fill={colors as [string, string, string]}
           colorTransition={colorTransition}
         />
-        <QestorText
-          height={textSize}
-          fill={colors as [string, string, string]}
-          colorTransition={colorTransition}
-        />
+        <Collapse
+          orientation={orientation}
+          unmountOnExit
+          in={textTransitionIn}
+          timeout={textTransitionTimeout}
+        >
+          <QestorText
+            {...{ [orientation === "horizontal" ? "ml" : "mt"]: textMargin }}
+            height={textSize}
+            fill={colors as [string, string, string]}
+            colorTransition={colorTransition}
+          />
+        </Collapse>
       </Stack>
     );
   }
