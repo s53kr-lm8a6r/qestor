@@ -1,0 +1,7 @@
+const STORAGE_KEYS = {
+  SESSION: {
+    SPLASH_SCREEN_SEEN: "01981235-750d-746a-b7d0-7a028f6b8288",
+  },
+};
+
+export default STORAGE_KEYS;
