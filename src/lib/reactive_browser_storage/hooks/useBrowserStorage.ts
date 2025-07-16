@@ -1,6 +1,6 @@
 "use client";
 
-import { useCookies, type UseCookiesReturn } from "../useCookies";
+import { useCookies, type UseCookiesReturn } from "./useCookies";
 import {
   useLocalStorage,
   useLocalStorageObject,
