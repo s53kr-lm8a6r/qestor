@@ -38,7 +38,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qestor/qestor.git",
-    "directory": "packages/reactive_browser_storage"
+    "directory": "libs/reactive_browser_storage"
   },
   "scripts": {
     "build": "tsc",

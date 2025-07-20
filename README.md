@@ -9,7 +9,7 @@ qestor/
 ├── apps/
 │   ├── web/          # Next.js frontend application
 │   └── api/          # NestJS backend API
-├── packages/         # Shared packages
+├── libs/             # Shared libraries
 │   └── reactive_browser_storage/  # Browser storage hooks and utilities
 ├── pnpm-workspace.yaml
 └── package.json      # Root workspace configuration
@@ -112,6 +112,6 @@ function MyComponent() {
 
 ## Workspace Configuration
 
-This project uses pnpm workspaces for monorepo management. Each application in `apps/` and shared package in `packages/` is a separate package with its own dependencies and build configuration.
+This project uses pnpm workspaces for monorepo management. Each application in `apps/` and shared library in `libs/` is a separate package with its own dependencies and build configuration.
 
-Dependencies are automatically hoisted to the root `node_modules` when possible, reducing disk space and improving install times. Shared packages use `workspace:*` protocol for internal dependencies.
+Dependencies are automatically hoisted to the root `node_modules` when possible, reducing disk space and improving install times. Shared libraries use `workspace:*` protocol for internal dependencies.

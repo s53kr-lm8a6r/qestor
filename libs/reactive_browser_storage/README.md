@@ -630,9 +630,9 @@ function TypeSafeExample() {
 
 ## 📦 Monorepo Integration
 
-### Package Structure
+### Library Structure
 ```
-packages/reactive_browser_storage/
+libs/reactive_browser_storage/
 ├── hooks/              # React hooks for storage management
 ├── utils/              # Storage utility classes
 ├── index.ts           # Main exports
@@ -641,20 +641,20 @@ packages/reactive_browser_storage/
 └── README.md          # This documentation
 ```
 
-### Building the Package
+### Building the Library
 ```bash
-# Build all packages
-pnpm run build:packages
+# Build all libraries
+pnpm run build:libs
 
 # Type check
 pnpm run type-check
 
-# Build specific package
+# Build specific library
 pnpm --filter @qestor/reactive-browser-storage build
 ```
 
 ### Using in Other Apps
-To use this package in another app within the monorepo:
+To use this library in another app within the monorepo:
 
 1. Add to your app's `package.json`:
 ```json
@@ -690,16 +690,16 @@ import { useLocalStorage } from '@qestor/reactive-browser-storage';
 
 **Cookie not being set**: Verify that you're not trying to set cookies during SSR, and check your cookie options (secure, sameSite, etc.).
 
-**Import errors**: Make sure you're importing from `@qestor/reactive-browser-storage` and that the package is listed in your app's dependencies.
+**Import errors**: Make sure you're importing from `@qestor/reactive-browser-storage` and that the library is listed in your app's dependencies.
 
 ## 🤝 Contributing
 
 This is part of the Qestor monorepo. For improvements or bug fixes:
 
-1. Make changes in `packages/reactive_browser_storage/`
+1. Make changes in `libs/reactive_browser_storage/`
 2. Test with the demo app at `/demo`
 3. Update version in `package.json` if needed
-4. Run `pnpm run build:packages` to ensure it builds correctly
+4. Run `pnpm run build:libs` to ensure it builds correctly
 5. Follow the project's contribution guidelines
 
 ## 📄 License

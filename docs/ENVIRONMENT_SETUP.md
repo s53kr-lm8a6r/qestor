@@ -138,6 +138,7 @@ qestor/
 │   └── api/
 │       ├── .env.local      # API local overrides
 │       └── src/main.ts     # NestJS env usage
+├── libs/                   # Shared libraries
 └── docs/
     └── ENVIRONMENT_SETUP.md # This documentation
 ```

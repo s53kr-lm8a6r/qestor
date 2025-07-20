@@ -4,9 +4,9 @@ import React from "react";
 
 import { Box, BoxProps } from "@mui/material";
 
-import { QestorBrand } from "@/lib/components/qestor";
+import { QestorBrand } from "@/libs/components/qestor";
 
-import { useQestorBrandAnimation } from "@/lib/common/functions/hooks/useQestorBrandAnimation";
+import { useQestorBrandAnimation } from "@/libs/common/functions/hooks/useQestorBrandAnimation";
 
 interface QestorBrandSplashProps extends BoxProps {
   textTransitionTimeout?: number;

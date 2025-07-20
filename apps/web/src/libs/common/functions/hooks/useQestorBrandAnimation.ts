@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import STORAGE_KEYS from "@/lib/common/constants/StorageKeys";
+import STORAGE_KEYS from "@/libs/common/constants/StorageKeys";
 
 import { useSessionStorage } from "@qestor/reactive-browser-storage";
 
