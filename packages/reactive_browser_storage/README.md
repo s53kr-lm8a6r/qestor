@@ -2,6 +2,8 @@
 
 A comprehensive, type-safe React hooks library for managing cookies, localStorage, and sessionStorage with automatic synchronization and reactive state management.
 
+**Part of the Qestor monorepo** - A shared workspace package for browser storage management across all applications.
+
 ## ✨ Features
 
 - 🔄 **Reactive State Management** - Changes automatically sync across components
@@ -14,13 +16,38 @@ A comprehensive, type-safe React hooks library for managing cookies, localStorag
 - 🔄 **Data Migration** - Move data between storage types
 - 🍪 **Advanced Cookie Options** - Full control over cookie settings
 - 🚀 **Auto-loading** - Loads existing data from storage on startup
+- 📦 **Workspace Package** - Shared across multiple apps in the monorepo
 
 ## 📦 Installation
 
-The library is already included in your project. Simply import from:
+This package is part of the Qestor monorepo workspace and is automatically available in apps that depend on it.
+
+### For Monorepo Apps
+
+Add the dependency to your app's `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@qestor/reactive-browser-storage": "workspace:*"
+  }
+}
+```
+
+Then run:
+```bash
+pnpm install
+```
+
+### Import in Your Code
 
 ```typescript
-import { useCookies, useLocalStorage, useBrowserStorage } from '@/lib/reactive_browser_storage';
+import {
+  useCookies,
+  useLocalStorage,
+  useSessionStorage,
+  useBrowserStorage
+} from '@qestor/reactive-browser-storage';
 ```
 
 ## 🚀 Quick Start
@@ -28,7 +55,7 @@ import { useCookies, useLocalStorage, useBrowserStorage } from '@/lib/reactive_b
 ### Basic Cookie Management
 
 ```tsx
-import { useCookies } from '@/lib/reactive_browser_storage';
+import { useCookies } from '@qestor/reactive-browser-storage';
 
 function LoginComponent() {
   const { cookies, setCookie, removeCookie, getCookie } = useCookies();
@@ -58,7 +85,7 @@ function LoginComponent() {
 ### Type-safe localStorage
 
 ```tsx
-import { useLocalStorage } from '@/lib/reactive_browser_storage';
+import { useLocalStorage } from '@qestor/reactive-browser-storage';
 
 interface UserPreferences {
   theme: 'light' | 'dark';
@@ -67,28 +94,28 @@ interface UserPreferences {
 }
 
 function SettingsComponent() {
-  const userPrefs = useLocalStorage<UserPreferences>('userPreferences', {
+  const { value: userPrefs, setValue: setUserPrefs, isLoading } = useLocalStorage<UserPreferences>('userPreferences', {
     theme: 'light',
     language: 'en',
     notifications: true,
   });
 
   const toggleTheme = () => {
-    if (userPrefs.value) {
-      userPrefs.setValue({
-        ...userPrefs.value,
-        theme: userPrefs.value.theme === 'light' ? 'dark' : 'light',
+    if (userPrefs) {
+      setUserPrefs({
+        ...userPrefs,
+        theme: userPrefs.theme === 'light' ? 'dark' : 'light',
       });
     }
   };
 
-  if (userPrefs.isLoading) {
+  if (isLoading) {
     return <div>Loading preferences...</div>;
   }
 
   return (
     <div>
-      <p>Current theme: {userPrefs.value?.theme}</p>
+      <p>Current theme: {userPrefs?.theme}</p>
       <button onClick={toggleTheme}>Toggle Theme</button>
     </div>
   );
@@ -98,7 +125,7 @@ function SettingsComponent() {
 ### Unified Storage Management
 
 ```tsx
-import { useBrowserStorage } from '@/lib/reactive_browser_storage';
+import { useBrowserStorage } from '@qestor/reactive-browser-storage';
 
 function DataManager() {
   const storage = useBrowserStorage();
@@ -263,7 +290,7 @@ Convenience hook for managing a single storage item.
 ### Shopping Cart with Persistence
 
 ```tsx
-import { useLocalStorage, useSessionStorage } from '@/lib/reactive_browser_storage';
+import { useLocalStorage, useSessionStorage } from '@qestor/reactive-browser-storage';
 
 interface CartItem {
   id: string;
@@ -274,35 +301,35 @@ interface CartItem {
 
 function ShoppingCart() {
   // Persistent cart that survives browser restarts
-  const cart = useLocalStorage<CartItem[]>('cart', []);
+  const { value: cart, setValue: setCart, removeValue: clearCart } = useLocalStorage<CartItem[]>('cart', []);
 
   // Temporary checkout form data
-  const checkoutForm = useSessionStorage<{
+  const { value: checkoutForm, setValue: setCheckoutForm, removeValue: clearCheckoutForm } = useSessionStorage<{
     email: string;
     address: string;
   }>('checkoutForm', { email: '', address: '' });
 
   const addToCart = (item: CartItem) => {
-    if (cart.value) {
-      const existingItem = cart.value.find(i => i.id === item.id);
+    if (cart) {
+      const existingItem = cart.find(i => i.id === item.id);
       if (existingItem) {
-        cart.setValue(
-          cart.value.map(i =>
+        setCart(
+          cart.map(i =>
             i.id === item.id
               ? { ...i, quantity: i.quantity + 1 }
               : i
           )
         );
       } else {
-        cart.setValue([...cart.value, item]);
+        setCart([...cart, item]);
       }
     }
   };
 
-  const updateCheckoutForm = (field: keyof typeof checkoutForm.value, value: string) => {
-    if (checkoutForm.value) {
-      checkoutForm.setValue({
-        ...checkoutForm.value,
+  const updateCheckoutForm = (field: keyof typeof checkoutForm, value: string) => {
+    if (checkoutForm) {
+      setCheckoutForm({
+        ...checkoutForm,
         [field]: value,
       });
     }
@@ -310,18 +337,14 @@ function ShoppingCart() {
 
   const checkout = () => {
     // Process order...
-    cart.removeValue(); // Clear cart after successful order
-    checkoutForm.removeValue(); // Clear form data
+    clearCart(); // Clear cart after successful order
+    clearCheckoutForm(); // Clear form data
   };
-
-  if (cart.isLoading) {
-    return <div>Loading cart...</div>;
-  }
 
   return (
     <div>
-      <h3>Cart ({cart.value?.length || 0} items)</h3>
-      {cart.value?.map(item => (
+      <h3>Cart ({cart?.length || 0} items)</h3>
+      {cart?.map(item => (
         <div key={item.id}>
           {item.name} - ${item.price} x {item.quantity}
         </div>
@@ -330,12 +353,12 @@ function ShoppingCart() {
       <div>
         <input
           placeholder="Email"
-          value={checkoutForm.value?.email || ''}
+          value={checkoutForm?.email || ''}
           onChange={(e) => updateCheckoutForm('email', e.target.value)}
         />
         <input
           placeholder="Address"
-          value={checkoutForm.value?.address || ''}
+          value={checkoutForm?.address || ''}
           onChange={(e) => updateCheckoutForm('address', e.target.value)}
         />
         <button onClick={checkout}>Checkout</button>
@@ -348,7 +371,7 @@ function ShoppingCart() {
 ### User Authentication System
 
 ```tsx
-import { useCookies, useLocalStorage } from '@/lib/reactive_browser_storage';
+import { useCookies, useLocalStorage } from '@qestor/reactive-browser-storage';
 
 interface User {
   id: string;
@@ -362,10 +385,10 @@ function useAuth() {
   const { getCookie, setCookie, removeCookie } = useCookies();
 
   // Store user data in localStorage
-  const userData = useLocalStorage<User>('user');
+  const { value: userData, setValue: setUserData, removeValue: clearUserData, isLoading } = useLocalStorage<User>('user');
 
   // Store session preferences
-  const sessionPrefs = useLocalStorage<{
+  const { value: sessionPrefs, setValue: setSessionPrefs } = useLocalStorage<{
     rememberMe: boolean;
     lastLogin: number;
   }>('sessionPrefs');
@@ -383,10 +406,10 @@ function useAuth() {
     });
 
     // Store user data
-    userData.setValue(user);
+    setUserData(user);
 
     // Update session preferences
-    sessionPrefs.setValue({
+    setSessionPrefs({
       rememberMe,
       lastLogin: Date.now(),
     });
@@ -394,15 +417,15 @@ function useAuth() {
 
   const logout = () => {
     removeCookie('auth_token');
-    userData.removeValue();
+    clearUserData();
   };
 
-  const isAuthenticated = !!getCookie('auth_token') && !!userData.value;
+  const isAuthenticated = !!getCookie('auth_token') && !!userData;
 
   return {
-    user: userData.value,
+    user: userData,
     isAuthenticated,
-    isLoading: userData.isLoading,
+    isLoading,
     login,
     logout,
   };
@@ -423,7 +446,7 @@ async function getToken(): Promise<string> {
 ### Data Migration and Synchronization
 
 ```tsx
-import { useBrowserStorage } from '@/lib/reactive_browser_storage';
+import { useBrowserStorage } from '@qestor/reactive-browser-storage';
 
 function DataMigrationExample() {
   const storage = useBrowserStorage();
@@ -482,34 +505,35 @@ function transformUserData(oldData: unknown): unknown {
 ### Cache Management with TTL
 
 ```tsx
-import { useLocalStorage } from '@/lib/reactive_browser_storage';
+import { useLocalStorage } from '@qestor/reactive-browser-storage';
+import { useEffect } from 'react';
 
 function useCachedData<T>(key: string, fetcher: () => Promise<T>, ttl: number = 300000) {
-  const cachedData = useLocalStorage<T>(key, undefined, ttl);
+  const { value: cachedData, setValue: setCachedData, removeValue: clearCache, isLoading } = useLocalStorage<T>(key, undefined, ttl);
 
   const refreshData = async () => {
     try {
       const freshData = await fetcher();
-      cachedData.setValue(freshData, ttl);
+      setCachedData(freshData, ttl);
       return freshData;
     } catch (error) {
       console.error('Failed to refresh data:', error);
-      return cachedData.value;
+      return cachedData;
     }
   };
 
   // Auto-refresh if no cached data
-  React.useEffect(() => {
-    if (!cachedData.value && !cachedData.isLoading) {
+  useEffect(() => {
+    if (!cachedData && !isLoading) {
       refreshData();
     }
-  }, [cachedData.value, cachedData.isLoading]);
+  }, [cachedData, isLoading]);
 
   return {
-    data: cachedData.value,
-    isLoading: cachedData.isLoading,
+    data: cachedData,
+    isLoading,
     refresh: refreshData,
-    clear: cachedData.removeValue,
+    clear: clearCache,
   };
 }
 
@@ -564,8 +588,8 @@ interface UserProfile {
 
 // Use with full type safety
 function TypeSafeExample() {
-  const userProfile = useLocalStorage<UserProfile>('userProfile');
-  const appSettings = useLocalStorage<AppSettings>('appSettings', {
+  const { value: userProfile } = useLocalStorage<UserProfile>('userProfile');
+  const { value: appSettings, setValue: setAppSettings } = useLocalStorage<AppSettings>('appSettings', {
     theme: 'auto',
     language: 'en',
     notifications: {
@@ -580,9 +604,9 @@ function TypeSafeExample() {
   });
 
   const updateTheme = (theme: AppSettings['theme']) => {
-    if (appSettings.value) {
-      appSettings.setValue({
-        ...appSettings.value,
+    if (appSettings) {
+      setAppSettings({
+        ...appSettings,
         theme,
       });
     }
@@ -592,7 +616,7 @@ function TypeSafeExample() {
   return (
     <div>
       <select
-        value={appSettings.value?.theme}
+        value={appSettings?.theme}
         onChange={(e) => updateTheme(e.target.value as AppSettings['theme'])}
       >
         <option value="light">Light</option>
@@ -602,6 +626,48 @@ function TypeSafeExample() {
     </div>
   );
 }
+```
+
+## 📦 Monorepo Integration
+
+### Package Structure
+```
+packages/reactive_browser_storage/
+├── hooks/              # React hooks for storage management
+├── utils/              # Storage utility classes
+├── index.ts           # Main exports
+├── package.json       # Package configuration
+├── tsconfig.json      # TypeScript configuration
+└── README.md          # This documentation
+```
+
+### Building the Package
+```bash
+# Build all packages
+pnpm run build:packages
+
+# Type check
+pnpm run type-check
+
+# Build specific package
+pnpm --filter @qestor/reactive-browser-storage build
+```
+
+### Using in Other Apps
+To use this package in another app within the monorepo:
+
+1. Add to your app's `package.json`:
+```json
+{
+  "dependencies": {
+    "@qestor/reactive-browser-storage": "workspace:*"
+  }
+}
+```
+
+2. Import and use:
+```tsx
+import { useLocalStorage } from '@qestor/reactive-browser-storage';
 ```
 
 ## ⚡ Performance Tips
@@ -624,10 +690,18 @@ function TypeSafeExample() {
 
 **Cookie not being set**: Verify that you're not trying to set cookies during SSR, and check your cookie options (secure, sameSite, etc.).
 
+**Import errors**: Make sure you're importing from `@qestor/reactive-browser-storage` and that the package is listed in your app's dependencies.
+
 ## 🤝 Contributing
 
-This is an internal library. For improvements or bug fixes, please follow the project's contribution guidelines.
+This is part of the Qestor monorepo. For improvements or bug fixes:
+
+1. Make changes in `packages/reactive_browser_storage/`
+2. Test with the demo app at `/demo`
+3. Update version in `package.json` if needed
+4. Run `pnpm run build:packages` to ensure it builds correctly
+5. Follow the project's contribution guidelines
 
 ## 📄 License
 
-Internal use only.
+Part of the Qestor project - Internal use only.

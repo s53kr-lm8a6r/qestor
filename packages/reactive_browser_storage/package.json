@@ -1,0 +1,47 @@
+{
+  "name": "@qestor/reactive-browser-storage",
+  "version": "1.0.0",
+  "description": "Reactive browser storage hooks and utilities for React applications",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "require": "./index.ts",
+      "types": "./index.ts"
+    }
+  },
+  "files": [
+    "hooks/**",
+    "utils/**",
+    "index.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "react",
+    "hooks",
+    "browser-storage",
+    "localStorage",
+    "sessionStorage",
+    "cookies",
+    "typescript"
+  ],
+  "author": "Qestor Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qestor/qestor.git",
+    "directory": "packages/reactive_browser_storage"
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  }
+}

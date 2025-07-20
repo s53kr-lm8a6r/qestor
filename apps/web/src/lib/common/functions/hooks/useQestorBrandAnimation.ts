@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import STORAGE_KEYS from "@/lib/common/constants/StorageKeys";
 
-import { useSessionStorage } from "@/lib/reactive_browser_storage/hooks/useSessionStorage";
+import { useSessionStorage } from "@qestor/reactive-browser-storage";
 
 interface QestorBrandAnimationState {
   textTransitionIn: boolean;
