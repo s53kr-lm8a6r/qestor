@@ -25,4 +25,6 @@ async function bootstrap() {
   console.log(`Environment: ${nodeEnv}`);
   console.log(`CORS Origins: ${corsOrigins.join(', ')}`);
 }
+
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();
